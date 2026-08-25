@@ -20,11 +20,11 @@ regenerate it locally after editing the keymap: `./draw.sh`.
 ## What's different from both sources
 
 - Only 3 of lily58's 4 thumb keys per hand physically exist on this board
-  (the innermost one on each hand doesn't) — `LH3`/`RH0` are bound to
-  `&none`. `fumbol` is triggered from either hand's thumb (mirroring
-  Kenkyo's own V/M symmetry), `extend` shares Space's thumb key via tap/hold
-  (tap for Space, hold for `extend` — not a separate key, since there isn't
-  a spare one), not held on V/M like in Kenkyo.
+  (the innermost one on each hand, `LH0`/`RH0`, doesn't) — those are bound
+  to `&none`. Thumb row, left to right: (unbound), Shift, Extend | Fumbol,
+  Space, (unbound) — `Extend` and `Fumbol` are plain momentary-layer keys,
+  not tap/hold. Backspace and Enter aren't on the thumb cluster at all;
+  they're only reachable via their one-key chords (see below).
 - A new `system` layer activates when `extend` and `fumbol` are held
   together (same tri-layer trick the old config used for `sys`). It carries
   bluetooth profile controls and media keys (see Layers below).
@@ -32,24 +32,23 @@ regenerate it locally after editing the keymap: `./draw.sh`.
   intentionally not ported.
 - No AltGr anywhere — every spot Kenkyo used right-Alt uses regular Alt
   instead.
-- Thumb row, left to right: Shift, Fumbol, Space/Extend, (missing) |
-  (missing), Backspace, Fumbol, Enter.
 
 ## Layers
 
 - **default** — QWERTY with home/bottom-row mods (Alt/Gui/Shift/Ctrl on
   `A S D F` / `J K L ;`, Ctrl/Alt on `Z X` / `. /`), one-key chords
-  `W+E`→Esc, `I+O`→Backspace, `X+C`→Tab, `,+.`→Enter, and a Caps
-  Lock/Hyper key (tap/hold) on the leftmost home-row position. The
-  rightmost column (top to bottom: `\ [ ' ]`) and top-left corner (`` ` ``)
-  are plain ASCII hosts for the OS's Russian layout to remap by physical
-  position.
-- **extend** — navigation (arrows, Home/End/PgUp/PgDn/Ins), plain modifier
-  taps on the home row.
-- **fumbol** — `F1`–`F10` on the number row (with `@`/`#` filling the two
-  leftover slots), shift+number symbols one row below that, numbers on the
-  home row (still mod-tapped), and math chords (`S+D`→`-`, `D+F`→`+`,
-  `J+K`→`/`, `K+L`→`*`, `J+L`→`.`).
+  `W+E`→Esc, `I+O`→Backspace, `X+C`→Tab, `,+.`→Enter (also active on
+  `extend` and `fumbol`), and a Caps Lock/Hyper key (tap/hold) on the
+  leftmost home-row position. The rightmost column (top to bottom:
+  `\ [ ' ]`) and top-left corner (`` ` ``) are plain ASCII hosts for the
+  OS's Russian layout to remap by physical position.
+- **extend** — navigation (arrows, Home/End/PgUp/PgDn/Ins) on the QWERTY
+  row, plain modifier taps on the home row plus Tab (`T`), Enter (`G`),
+  and Menu (`B`), and Backspace/Space/Delete on the bottom row.
+- **fumbol** — `F1`–`F12` straight across the number row, shift+number
+  symbols one row below that, numbers on the home row (still mod-tapped),
+  and math chords (`S+D`→`-`, `D+F`→`+`, `J+K`→`/`, `K+L`→`*`,
+  `J+L`→`.`).
 - **system** — bluetooth profile selection (`BT_SEL 0-4`, number row) and a
   3-second hold to clear the current profile's bond, plus media keys
   (mute/volume/play-pause) on the home row.

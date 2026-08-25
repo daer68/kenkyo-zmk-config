@@ -29,7 +29,7 @@
 // silakka54 config used for `sys`.
 //
 // This particular board only has 3 of lily58's 4 thumb keys per hand — the
-// innermost key on each hand (LH3, RH0) doesn't physically exist.
+// innermost key on each hand (LH0, RH0) doesn't physically exist.
 #define DEF 0
 #define EXTEND 1
 #define FUMBOL 2
@@ -43,13 +43,6 @@
 #define THUMBS LH3 LH2 LH1 LH0 RH0 RH1 RH2 RH3                            // thumbs
 
 #define QUICK_TAP_MS 175
-
-&lt {
-  flavor = "balanced";
-  tapping-term-ms = <200>;
-  quick-tap-ms = <QUICK_TAP_MS>;
-};
-
 
 #define MAKE_HRM(NAME, HOLD, TAP, TRIGGER_POS)                                 \
   ZMK_HOLD_TAP(NAME, bindings = <HOLD>, <TAP>; flavor = "balanced";            \
@@ -83,9 +76,9 @@ ZMK_HOLD_TAP(bt_clear_ht, bindings = <&bt_clear>, <&none>;
 // | TAB |  Q  |  W  |  E   |  R   |  T   |                   |  Y   |  U    |  I    |  O   |   P   |   [   |
 // |CAPS/| A/A | S/G | D/S  | F/C  |  G   |                   |  H   | J/C   | K/S   | L/G  |  ;/A  |   '   |
 // |HYPER|Z/Ctl|X/Alt|  C   |  V   |  B   |   xxx  |  |  xxx  |  N   |  M    |  ,    |./Alt |  //Ctl|   ]   |
-//                   | none | Sft  |fumbol|nav/spc |  | BSPC |fumbol| RET  | none |
+//                   | none | Sft  |extend|  xxx   |  |  xxx  |fumbol|space | none |
 //
-// One-key chords (active on default + fumbol): W+E->Esc, I+O->Bspc, X+C->Tab, ,+.->Enter
+// One-key chords (active on default + extend + fumbol): W+E->Esc, I+O->Bspc, X+C->Tab, ,+.->Enter
 // Rightmost column (top to bottom) and top-left corner are ASCII hosts for
 // the OS's Russian keyboard layout to remap by physical position.
 // Only 3 of 4 thumb keys per hand exist on this board (innermost missing).
@@ -94,24 +87,24 @@ ZMK_HOLD_TAP(bt_clear_ht, bindings = <&bt_clear>, <&none>;
 &kp TAB              &kp Q         &kp W       &kp E        &kp R        &kp T                              &kp Y      &kp U        &kp I        &kp O       &kp P          &kp LBKT
 &caps_hyper LC(LS(LA(LGUI))) CAPS  &hml LALT A   &hml LGUI S &hml LSHFT D &hml LCTRL F &kp G                              &kp H      &hmr RCTRL J &hmr RSHFT K &hmr LGUI L &hmr LALT SEMI &kp SQT
 &none                &hml LCTRL Z  &hml LALT X &kp C        &kp V        &kp B            XXX        XXX    &kp N      &kp M        &kp COMMA    &hmr LALT DOT &hmr RCTRL FSLH &kp RBKT
-                                                &kp LSHFT    &mo FUMBOL    &lt EXTEND SPACE XXX               XXX        &kp BSPC     &mo FUMBOL   &kp RET
+                                                XXX          &kp LSHFT    &mo EXTEND       XXX               XXX        &mo FUMBOL   &kp SPACE    XXX
             >;
         };
 
         extend_layer {
 // ------------------------------------------------------------------------------------------------------------
-// Kenkyo's `extend` layer, held via the nav/space thumb key.
+// Kenkyo's `extend` layer, held via the extend thumb key.
 // |     |     |     |      |      |      |                   |      |       |       |      |       |       |
-// |     |     |     |      |      |      |                   | PGUP | HOME  |  UP   |  END |  INS  |       |
-// |     | Alt | Gui |  Sft | Ctl  | Menu |                   | PGDN | LEFT  | DOWN  | RIGHT|  Esc  |       |
-// |     |     |     |      |      |      |   xxx  |  |  xxx  |  TAB | BSPC  | SPACE | DEL  |  RET  |       |
+// |     |     |     |      |      | TAB  |                   | PGUP | HOME  |  UP   |  END |  INS  |       |
+// |     | Alt | Gui |  Sft | Ctl  | RET  |                   | PGDN | LEFT  | DOWN  | RIGHT|  Esc  |       |
+// |     |     |     |      |      | Menu |   xxx  |  |  xxx  |      | BSPC  | SPACE | DEL  |       |       |
 // Media keys used to live on the bottom row here; moved to `system`.
             display-name = "extend";
             bindings = <
 &trans &trans        &trans        &trans        &trans        &trans                              &trans     &trans      &trans      &trans     &trans   &trans
-&trans &trans        &trans        &trans        &trans        &trans                              &kp PG_UP  &kp HOME    &kp UP      &kp END    &kp INS  &trans
-&trans &kp LALT       &kp LGUI      &kp LSHFT     &kp LCTRL     &kp K_APPLICATION                    &kp PG_DN  &kp LEFT    &kp DOWN    &kp RIGHT  &kp ESC  &trans
-&trans &trans         &trans        &trans        &trans        &trans           &trans     &trans   &kp TAB    &kp BSPC    &kp SPACE   &kp DEL    &kp RET  &trans
+&trans &trans        &trans        &trans        &trans        &kp TAB                             &kp PG_UP  &kp HOME    &kp UP      &kp END    &kp INS  &trans
+&trans &kp LALT       &kp LGUI      &kp LSHFT     &kp LCTRL     &kp RET                              &kp PG_DN  &kp LEFT    &kp DOWN    &kp RIGHT  &kp ESC  &trans
+&trans &trans         &trans        &trans        &trans        &kp K_APPLICATION &trans     &trans   &trans    &kp BSPC    &kp SPACE   &kp DEL    &trans  &trans
                                     &trans        &trans        &trans           &trans     &trans   &trans     &trans      &trans
             >;
         };
@@ -119,10 +112,9 @@ ZMK_HOLD_TAP(bt_clear_ht, bindings = <&bt_clear>, <&none>;
         fumbol_layer {
 // ------------------------------------------------------------------------------------------------------------
 // Kenkyo's `fumbol` layer (Function/Numbers/Symbols), held via either
-// thumb's fumbol key. F-keys moved to the number row (F1-F10 over 1-0);
-// the two F11/F12 overflow slots became @ and # instead. Shift+number
-// symbols now sit on the row above home row.
-// |  @  |  F1 |  F2 |  F3  |  F4  |  F5  |                   |  F6  |  F7   |  F8   |  F9  |  F10  |   #   |
+// thumb's fumbol key. F-keys fill the number row (F1-F12). Shift+number
+// symbols sit on the row above home row.
+// |  F1 |  F2 |  F3 |  F4  |  F5  |  F6  |                   |  F7  |  F8   |  F9   |  F10 |  F11  |  F12  |
 // |     |  !  |  @  |  #   |  $   |  %   |                   |  ^   |   &   |   *   |  (   |   )   |       |
 // |     |1/Alt|2/Gui|3/Sft |4/Ctl |  5   |                   |  6   | 7/Ctl | 8/Sft | 9/Gui| 0/Alt |       |
 // |     |</Ctl|`/Alt|  -   |  =   |      |   xxx  |  |  xxx  |      |   '   |   [   | ]/Alt| \/Ctl |       |
@@ -131,7 +123,7 @@ ZMK_HOLD_TAP(bt_clear_ht, bindings = <&bt_clear>, <&none>;
 // (S+D+F "🔢₌" 3-key chord from the source not ported — unclear/garbled glyph)
             display-name = "fumbol";
             bindings = <
-&kp AT &kp F1               &kp F2        &kp F3        &kp F4        &kp F5                          &kp F6     &kp F7             &kp F8             &kp F9            &kp F10              &kp HASH
+&kp F1 &kp F2               &kp F3        &kp F4        &kp F5        &kp F6                          &kp F7     &kp F8             &kp F9             &kp F10           &kp F11              &kp F12
 &trans &kp EXCL              &kp AT        &kp HASH      &kp DLLR      &kp PRCNT                       &kp CARET  &kp AMPS           &kp ASTRK          &kp LPAR          &kp RPAR             &trans
 &trans &hml LALT N1         &hml LGUI N2  &hml LSHFT N3 &hml LCTRL N4 &kp N5                           &kp N6     &hmr RCTRL N7      &hmr RSHFT N8      &hmr LGUI N9      &hmr LALT N0         &trans
 &trans &hml LCTRL NON_US_BSLH &hml LALT GRAVE &kp MINUS   &kp EQUAL     &trans         &trans   &trans  &trans     &kp SQT            &kp LBKT           &hmr LALT RBKT    &hmr LCTRL BSLH      &trans
@@ -172,36 +164,36 @@ ZMK_HOLD_TAP(bt_clear_ht, bindings = <&bt_clear>, <&none>;
     combos {
         compatible = "zmk,combos";
 
-        // Kenkyo's four one-key chords, valid on both default and fumbol
-        // (the individual taps differ per layer; the chord output doesn't).
-        // Row labels here follow zmk-helpers' lily58 matrix order, where
-        // LT/RT is the number row, LM/RM the QWERTY row, LB/RB the home
-        // row, and LF/RF the bottom row.
+        // Kenkyo's four one-key chords, valid on default, extend, and
+        // fumbol (the individual taps differ per layer; the chord output
+        // doesn't). Row labels here follow zmk-helpers' lily58 matrix
+        // order, where LT/RT is the number row, LM/RM the QWERTY row,
+        // LB/RB the home row, and LF/RF the bottom row.
         combo_esc {
             timeout-ms = <35>;
             key-positions = <LM2 LM3>; // W + E
-            layers = <DEF FUMBOL>;
+            layers = <DEF EXTEND FUMBOL>;
             bindings = <&kp ESC>;
         };
 
         combo_bspc {
             timeout-ms = <35>;
             key-positions = <RM2 RM3>; // I + O
-            layers = <DEF FUMBOL>;
+            layers = <DEF EXTEND FUMBOL>;
             bindings = <&kp BSPC>;
         };
 
         combo_tab {
             timeout-ms = <35>;
             key-positions = <LF2 LF3>; // X + C
-            layers = <DEF FUMBOL>;
+            layers = <DEF EXTEND FUMBOL>;
             bindings = <&kp TAB>;
         };
 
         combo_ret {
             timeout-ms = <35>;
             key-positions = <RF2 RF3>; // , + .
-            layers = <DEF FUMBOL>;
+            layers = <DEF EXTEND FUMBOL>;
             bindings = <&kp RET>;
         };
 
@@ -215,7 +207,7 @@ ZMK_HOLD_TAP(bt_clear_ht, bindings = <&bt_clear>, <&none>;
 
         combo_kp_plus {
             timeout-ms = <35>;
-            key-positions = <LB3 LB4>; // D + F
+            key-positions = <LB1 LB2>; // D + F
             layers = <FUMBOL>;
             bindings = <&kp KP_PLUS>;
         };
