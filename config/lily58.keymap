@@ -1,0 +1,226 @@
+/*
+ * Copyright (c) 2020 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/ext_power.h>
+
+#include "zmk-helpers/helper.h"
+// Source desired key-position labels
+#include "zmk-helpers/key-labels/lily58.h"
+// Source unicode-chars for desired languages
+#include "zmk-helpers/unicode-chars/russian.dtsi"
+
+#define _BT_SEL_KEYS_                                                        \
+      &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_CLR
+
+#define ___ &trans
+#define XXX &none
+
+// Layout is a port of https://github.com/daer68/kenkyo onto this lily58
+// hardware. `extend` and `fumbol` are Kenkyo's layers verbatim (minus its
+// one-shot modifier chords, which are intentionally not ported); `fn` is new
+// here, reached by holding both `extend` and `fumbol` together, same
+// tri-layer mechanism the old silakka54 config used for `sys`.
+#define DEF 0
+#define EXTEND 1
+#define FUMBOL 2
+#define FN 3
+
+/* Timeless homerow mods */
+
+// https://github.com/urob/zmk-config/tree/main#timeless-homerow-mods
+#define KEYS_L LT0 LT1 LT2 LT3 LT4 LT5 LM0 LM1 LM2 LM3 LM4 LM5 LB0 LB1 LB2 LB3 LB4 LB5 LF0 LF1 LF2 LF3 LF4 LF5  // left hand
+#define KEYS_R RT0 RT1 RT2 RT3 RT4 RT5 RM0 RM1 RM2 RM3 RM4 RM5 RB0 RB1 RB2 RB3 RB4 RB5 RF0 RF1 RF2 RF3 RF4 RF5  // right hand
+#define THUMBS LH3 LH2 LH1 LH0 RH0 RH1 RH2 RH3                            // thumbs
+
+#define QUICK_TAP_MS 175
+
+&lt {
+  flavor = "balanced";
+  tapping-term-ms = <200>;
+  quick-tap-ms = <QUICK_TAP_MS>;
+};
+
+
+#define MAKE_HRM(NAME, HOLD, TAP, TRIGGER_POS)                                 \
+  ZMK_HOLD_TAP(NAME, bindings = <HOLD>, <TAP>; flavor = "balanced";            \
+               tapping-term-ms = <280>; quick-tap-ms = <QUICK_TAP_MS>;         \
+               require-prior-idle-ms = <150>; hold-trigger-on-release;         \
+               hold-trigger-key-positions = <TRIGGER_POS>;)
+
+MAKE_HRM(hml, &kp, &kp, KEYS_R THUMBS) // Left-hand HRMs.
+MAKE_HRM(hmr, &kp, &kp, KEYS_L THUMBS) // Right-hand HRMs.
+
+/* Tri-layer: holding extend + fumbol together activates fn */
+ZMK_CONDITIONAL_LAYER(fn, EXTEND FUMBOL, FN)
+
+/* Bluetooth: tap does nothing, hold 3s clears the current profile's bond */
+ZMK_MACRO(bt_clear, bindings = <&bt BT_CLR>;)
+
+ZMK_HOLD_TAP(bt_clear_ht, bindings = <&bt_clear>, <&none>;
+             flavor = "tap-preferred"; tapping-term-ms = <3000>;)
+
+/ {
+    keymap {
+        compatible = "zmk,keymap";
+
+        default_layer {
+// ------------------------------------------------------------------------------------------------------------
+// |  `  |  1  |  2  |  3   |  4   |  5   |                   |  6   |  7    |  8    |  9   |   0   |       |
+// | TAB |  Q  |  W  |  E   |  R   |  T   |                   |  Y   |  U    |  I    |  O   |   P   |   -   |
+// | ESC | A/Alt| S/Gui| D/Sft| F/Ctl|  G   |                   |  H   | J/Ctl | K/Sft | L/Gui|  ;/Alt|   '   |
+// |     |Z/Ctl|X/Alt|  C   |  V   |  B   |   xxx  |  |  xxx  |  N   |  M    |  ,    |./Alt |  //Ctl|  Sft  |
+//                   | none | Sft  | EXTEND | SPACE |  | BSPC | FUMBOL | RET  | none |
+//
+// One-key chords (active on default + fumbol): W+E->Esc, I+O->Bspc, X+C->Tab, ,+.->Enter
+            // display-name = "def";
+            bindings = <
+&kp GRAVE &kp N1        &kp N2      &kp N3       &kp N4       &kp N5                             &kp N6     &kp N7       &kp N8       &kp N9      &kp N0         &kp GRAVE
+&kp TAB   &kp Q         &kp W       &kp E        &kp R        &kp T                              &kp Y      &kp U        &kp I        &kp O       &kp P          &kp MINUS
+&kp ESC   &hml LALT A   &hml LGUI S &hml LSHFT D &hml LCTRL F &kp G                              &kp H      &hmr RCTRL J &hmr RSHFT K &hmr LGUI L &hmr RALT SEMI &kp SQT
+&none     &hml LCTRL Z  &hml RALT X &kp C        &kp V        &kp B            XXX        XXX    &kp N      &kp M        &kp COMMA    &hmr RALT DOT &hmr RCTRL FSLH &kp RSHFT
+                                    XXX          &kp LSHFT    &mo EXTEND       &kp SPACE  &kp BSPC &mo FUMBOL &kp RET     XXX
+            >;
+        };
+
+        extend_layer {
+// ------------------------------------------------------------------------------------------------------------
+// Kenkyo's `extend` layer, held via the dedicated EXTEND thumb key.
+// |     |     |     |      |      |      |                   |      |       |       |      |       |       |
+// |     |     |     |      |      |      |                   | PGUP | HOME  |  UP   |  END |  INS  |       |
+// |     | Alt | Gui |  Sft | Ctl  | Menu |                   | PGDN | LEFT  | DOWN  | RIGHT|  Esc  |       |
+// |     |Mute |VolDn|VolUp |  PP  |      |   xxx  |  |  xxx  |  TAB | BSPC  | SPACE | DEL  |  RET  |       |
+            display-name = "extend";
+            bindings = <
+&trans &trans        &trans        &trans        &trans        &trans                              &trans     &trans      &trans      &trans     &trans   &trans
+&trans &trans        &trans        &trans        &trans        &trans                              &kp PG_UP  &kp HOME    &kp UP      &kp END    &kp INS  &trans
+&trans &kp LALT       &kp LGUI      &kp LSHFT     &kp LCTRL     &kp K_APPLICATION                    &kp PG_DN  &kp LEFT    &kp DOWN    &kp RIGHT  &kp ESC  &trans
+&trans &kp C_MUTE     &kp C_VOL_DN  &kp C_VOL_UP  &kp C_PP      &trans           &trans     &trans   &kp TAB    &kp BSPC    &kp SPACE   &kp DEL    &kp RET  &trans
+                                    &trans        &trans        &trans           &trans     &trans   &trans     &trans      &trans
+            >;
+        };
+
+        fumbol_layer {
+// ------------------------------------------------------------------------------------------------------------
+// Kenkyo's `fumbol` layer (Function/Numbers/Symbols), held via the dedicated FUMBOL thumb key.
+// |     |     |     |      |      |      |                   |      |       |       |      |       |       |
+// |     |  F1 |  F2 |  F3  |  F4  |  F5  |                   |  F6  |  F7   |  F8   |  F9  |  F10  |       |
+// |     |1/Alt|2/Gui|3/Sft |4/Ctl |  5   |                   |  6   | 7/Ctl | 8/Sft | 9/Gui| 0/Alt |       |
+// |     |</Ctl|`/Alt|  -   |  =   |  F11 |   xxx  |  |  xxx  |  F12 |   '   |   [   | ]/Alt| \/Ctl |       |
+//
+// Fumbol-only chords: S+D->KP-, D+F->KP+, J+K->KP/, K+L->KP*, J+L->.
+// (S+D+F "🔢₌" 3-key chord from the source not ported — unclear/garbled glyph)
+            display-name = "fumbol";
+            bindings = <
+&trans &trans                &trans        &trans        &trans        &trans                          &trans     &trans             &trans             &trans            &trans               &trans
+&trans &kp F1               &kp F2        &kp F3        &kp F4        &kp F5                          &kp F6     &kp F7             &kp F8             &kp F9            &kp F10              &trans
+&trans &hml LALT N1         &hml LGUI N2  &hml LSHFT N3 &hml LCTRL N4 &kp N5                           &kp N6     &hmr RCTRL N7      &hmr RSHFT N8      &hmr LGUI N9      &hmr RALT N0         &trans
+&trans &hml LCTRL NON_US_BSLH &hml RALT GRAVE &kp MINUS   &kp EQUAL     &kp F11        &trans   &trans  &kp F12    &kp SQT            &kp LBKT           &hmr RALT RBKT    &hmr LCTRL BSLH      &trans
+                                            &trans        &trans        &trans         &trans   &trans  &trans     &trans             &trans
+            >;
+        };
+
+        fn_layer {
+// ------------------------------------------------------------------------------------------------------------
+// Reached by holding EXTEND + FUMBOL together. For now: just the old
+// silakka54 bluetooth row (hold bt_clear_ht 3s to clear, or select profile).
+// |CLR/3s|  1  |  2  |  3   |  4   |  5   |                   |      |       |       |      |       |       |
+            display-name = "fn";
+            bindings = <
+&bt_clear_ht 0 0 &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4     &trans &trans &trans &trans &trans &trans
+&trans &trans &trans &trans &trans &trans                   &trans &trans &trans &trans &trans &trans
+&trans &trans &trans &trans &trans &trans                   &trans &trans &trans &trans &trans &trans
+&trans &trans &trans &trans &trans &trans &trans &trans     &trans &trans &trans &trans &trans &trans
+                     &trans &trans &trans &trans &trans    &trans &trans &trans
+            >;
+        };
+
+        extra_2 {
+            status = "reserved";
+        };
+
+        extra_3 {
+            status = "reserved";
+        };
+    };
+};
+
+/ {
+    combos {
+        compatible = "zmk,combos";
+
+        // Kenkyo's four one-key chords, valid on both default and fumbol
+        // (the individual taps differ per layer; the chord output doesn't).
+        // Row labels here follow zmk-helpers' lily58 matrix order, where
+        // LT/RT is the number row, LM/RM the QWERTY row, LB/RB the home
+        // row, and LF/RF the bottom row.
+        combo_esc {
+            timeout-ms = <35>;
+            key-positions = <LM2 LM3>; // W + E
+            layers = <DEF FUMBOL>;
+            bindings = <&kp ESC>;
+        };
+
+        combo_bspc {
+            timeout-ms = <35>;
+            key-positions = <RM2 RM3>; // I + O
+            layers = <DEF FUMBOL>;
+            bindings = <&kp BSPC>;
+        };
+
+        combo_tab {
+            timeout-ms = <35>;
+            key-positions = <LF2 LF3>; // X + C
+            layers = <DEF FUMBOL>;
+            bindings = <&kp TAB>;
+        };
+
+        combo_ret {
+            timeout-ms = <35>;
+            key-positions = <RF2 RF3>; // , + .
+            layers = <DEF FUMBOL>;
+            bindings = <&kp RET>;
+        };
+
+        // Fumbol-only math chords from Kenkyo's fhl/fhr chord groups.
+        combo_kp_minus {
+            timeout-ms = <35>;
+            key-positions = <LB2 LB3>; // S + D
+            layers = <FUMBOL>;
+            bindings = <&kp KP_MINUS>;
+        };
+
+        combo_kp_plus {
+            timeout-ms = <35>;
+            key-positions = <LB3 LB4>; // D + F
+            layers = <FUMBOL>;
+            bindings = <&kp KP_PLUS>;
+        };
+
+        combo_kp_slash {
+            timeout-ms = <35>;
+            key-positions = <RB1 RB2>; // J + K
+            layers = <FUMBOL>;
+            bindings = <&kp KP_SLASH>;
+        };
+
+        combo_kp_asterisk {
+            timeout-ms = <35>;
+            key-positions = <RB2 RB3>; // K + L
+            layers = <FUMBOL>;
+            bindings = <&kp KP_ASTERISK>;
+        };
+
+        combo_dot {
+            timeout-ms = <35>;
+            key-positions = <RB1 RB3>; // J + L
+            layers = <FUMBOL>;
+            bindings = <&kp DOT>;
+        };
+    };
+};

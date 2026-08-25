@@ -1,0 +1,29 @@
+manifest:
+  defaults:
+    revision: v0.3
+  remotes:
+    - name: zmkfirmware
+      url-base: https://github.com/zmkfirmware
+    - name: urob
+      url-base: https://github.com/urob
+    - name: infely
+      url-base: https://github.com/infely
+    # Additional modules containing boards/shields/custom code can be listed here as well
+    # See https://docs.zephyrproject.org/3.2.0/develop/west/manifest.html#projects
+  projects:
+    - name: zmk
+      remote: zmkfirmware
+      revision: v0.3
+      import: app/west.yml
+    - name: zmk-helpers
+      remote: urob
+      revision: v0.3 # Should match ZMK release.
+    - name: zmk-auto-layer
+      remote: urob
+      revision: v0.3 # Should match ZMK release.
+    - name: nice-view-battery
+      remote: infely
+      revision: a9ebccd6309e21525577dc35fea4eb107bda7cd1 # main, pinned for reproducibility (no tags published)
+
+  self:
+    path: config

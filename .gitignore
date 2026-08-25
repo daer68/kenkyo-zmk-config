@@ -1,0 +1,23 @@
+
+.zmk/
+install/
+
+# Local west workspace (west init was run with this repo as topdir, so
+# west update's projects land here as siblings of config/ instead of
+# in a separate outer folder). Regenerate with: west update
+/.west/
+/build/
+# Note: this repo doesn't track a zephyr/module.yml (it would collide with
+# west update's Zephyr RTOS clone landing at this same local path, which is
+# itself a nested git repo git can't track files inside from here anyway —
+# and it wasn't functionally needed since this project defines no custom
+# boards/shields).
+/zephyr/
+/zmk/
+/zmk-helpers/
+/zmk-auto-layer/
+/nice-view-battery/
+/modules/
+
+# Local Python toolchain venv (west, zephyr's build deps)
+/.venv/
