@@ -4,9 +4,18 @@ A ZMK firmware config for a `nice_nano_v2` + `lily58` split board, combining:
 
 - The build plumbing, home-row-mod infrastructure, and OLED/battery setup
   from [`daer68/silakka54-zmk-config`](https://github.com/daer68/silakka54-zmk-config).
-- The layout design from [`daer68/kenkyo`](https://github.com/daer68/kenkyo):
+- The layout design from **[Kenkyo](https://github.com/argenkiwi/kenkyo)**:
   home/bottom-row mods, one-key chords, the `extend` (navigation/media) layer,
   and the `fumbol` (numbers/function-keys/symbols) layer.
+
+## Layout
+
+![keymap diagram](keymap-drawer/lily58.svg)
+
+Regenerated automatically on every push by
+[`.github/workflows/draw-keymap.yml`](.github/workflows/draw-keymap.yml)
+(via [keymap-drawer](https://github.com/caksoylar/keymap-drawer)). To
+regenerate it locally after editing the keymap: `./draw.sh`.
 
 ## What's different from both sources
 
@@ -34,14 +43,26 @@ A ZMK firmware config for a `nice_nano_v2` + `lily58` split board, combining:
 
 ## Building
 
+One-time toolchain setup (west, Python deps, Zephyr SDK), then:
+
 ```sh
 west init -l config
 west update
-west build -b nice_nano_v2 -- -DSHIELD="lily58_left nice_view_adapter nice_view_battery"
-west build -b nice_nano_v2 -- -DSHIELD="lily58_right nice_view_adapter nice_view_battery"
 ```
 
-Or push to GitHub and let `.github/workflows/build.yml` build both halves.
+From then on, `./build.sh` builds both halves and drops the firmware into
+`install/` (`./build.sh --pristine` for a clean reconfigure). Or push to
+GitHub and let `.github/workflows/build.yml` build both halves as CI
+artifacts instead.
+
+## Credits
+
+The `extend`/`fumbol` layer design and one-key chords are adapted from
+**[Kenkyo](https://github.com/argenkiwi/kenkyo)**, a minimal 31-key layered
+layout by [argenkiwi](https://github.com/argenkiwi). This repo only ports
+that design onto different (split, `lily58`) hardware with different
+thumb-key wiring and a new `fn` layer — all credit for the underlying layout
+goes to the original project. Go check it out.
 
 ## License
 

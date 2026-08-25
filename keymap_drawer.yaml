@@ -1,0 +1,8 @@
+parse_config:
+  # zmk-helpers' ZMK_HOLD_TAP/ZMK_CONDITIONAL_LAYER/etc. macros need to be
+  # expanded to parse this keymap, but ZMK's own dt-bindings/behaviors.dtsi
+  # must NOT be resolved, or keycode names collapse to unreadable raw HID
+  # expressions instead of staying as e.g. "GRAVE" for keymap-drawer's own
+  # label lookup. So only zmk-helpers gets added as an include path here.
+  zmk_additional_includes:
+    - zmk-helpers/include
